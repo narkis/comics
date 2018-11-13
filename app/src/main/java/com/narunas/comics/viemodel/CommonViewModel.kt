@@ -1,48 +1,55 @@
 package com.narunas.comics.viemodel
 
-import android.arch.lifecycle.AndroidViewModel
+import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
-import android.util.Log
-import com.google.common.hash.Hashing
-import com.narunas.comics.App
 import com.narunas.comics.components.ComicsHttpComponent
 import com.narunas.comics.components.DaggerComicsHttpComponent
-import com.narunas.comics.components.code.HttpCode
+import com.narunas.comics.components.modules.ComicsGsonModule
+import com.narunas.comics.http.HttpCode
 import com.narunas.comics.components.modules.ComicsHttpModule
-import java.net.URL
-import java.net.URLEncoder
+import com.narunas.comics.gson.Comic
+import com.narunas.comics.gson.GsonCode
 import javax.inject.Inject
 import kotlin.concurrent.thread
 
-class CommonViewModel : ViewModel(){
+class CommonViewModel : ViewModel() {
 
-    @Inject lateinit var httpHandler: HttpCode
+    @Inject
+    lateinit var httpHandler: HttpCode
+    @Inject
+    lateinit var gsonParser: GsonCode
 
-    fun buildFunctionality() {
+    private var eTag: String = ""
 
-        createHttpComponent().inject(this)
-
+    companion object {
+        val Comics: MutableLiveData<ArrayList<Comic>> = MutableLiveData()
     }
 
+    init {
+
+        createHttpComponent().inject(this)
+    }
 
     fun fetchHttpData() {
 
-        val baseUrl = "https://gateway.marvel.com:443/v1/public/comics"
-        val devKey = URLEncoder.encode("274049d15c01f3897fe1f51f96761092", "UTF-8")
-        val devPrKey = URLEncoder.encode("274049d15c01f3897fe1f51f96761092", "UTF-8")
-        val devTs = URLEncoder.encode(System.currentTimeMillis().toString(), "UTF-8")
+        thread {
 
-        val charSet = charset("UTF-8")
-        val devHash = Hashing.md5().hashString(devTs + devKey + devPrKey, charSet)
+            val response = httpHandler.fetchJson(eTag)
+            val comics = gsonParser.parseResponse(response)
+            eTag = comics.etag
+            Comics.postValue(comics.data.comics)
 
-
-        val mUrl = URL(baseUrl+ "?ts=" + devTs + "&apikey=" + devKey + "&hash=" + devHash)
+        }
 
     }
 
-
-    private fun createHttpComponent() : ComicsHttpComponent =
-        DaggerComicsHttpComponent.builder()
+    /** dagger http component **/
+    private fun createHttpComponent(): ComicsHttpComponent {
+        return DaggerComicsHttpComponent.builder()
             .comicsHttpModule(ComicsHttpModule())
+            .comicsGsonModule(ComicsGsonModule())
             .build()
+    }
+
+
 }

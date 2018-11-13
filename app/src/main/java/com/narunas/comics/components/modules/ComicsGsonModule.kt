@@ -1,19 +1,18 @@
 package com.narunas.comics.components.modules
 
-import com.narunas.comics.http.HttpCode
+import com.narunas.comics.gson.GsonCode
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
 
 
 @Module
-class ComicsHttpModule {
+class ComicsGsonModule {
 
     @Provides
     @Singleton
 
-    fun providesComicsHttpFunctionality() : HttpCode {
-        return HttpCode()
+    fun providesComicsGsonFunctionality() : GsonCode{
+        return GsonCode()
     }
-
 }

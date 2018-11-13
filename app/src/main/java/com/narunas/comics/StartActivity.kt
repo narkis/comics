@@ -7,7 +7,6 @@ import com.narunas.comics.viemodel.CommonViewModel
 
 class StartActivity : AppCompatActivity() {
 
-
     private lateinit var model: CommonViewModel
     private lateinit var comicsApp: App
 
@@ -17,8 +16,7 @@ class StartActivity : AppCompatActivity() {
 
         comicsApp = application as App
         model = ViewModelProviders.of(this).get(CommonViewModel::class.java)
-        model.buildFunctionality()
-//        model.fetchHttpData()
+        model.fetchHttpData()
 
 
     }

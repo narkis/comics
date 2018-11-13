@@ -1,16 +1,16 @@
-package com.narunas.comics.components.code
+package com.narunas.comics.http
 
 
+import android.util.Log
 import com.google.common.hash.Hashing
 import java.io.BufferedReader
-import java.io.InputStream
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.HttpURLConnection.HTTP_OK
 import java.net.URL
 import java.net.URLEncoder
 
-class HttpCode : HttpCodeInterface{
+class HttpCode : HttpCodeInterface {
 
     private val charSet = charset("UTF-8")
     private val ENC  = "UTF-8"
@@ -20,9 +20,11 @@ class HttpCode : HttpCodeInterface{
     private val formatType = "&formatType=comic"
     private val limit = "&limit=20"
 
+    companion object {
+        val TAG: String = HttpCode::class.java.simpleName
+    }
 
-
-    override fun fetchJson() :StringBuffer? {
+    override fun fetchJson(eTag: String) :StringBuffer? {
 
         var response: StringBuffer? = null
         val baseUrl = "https://gateway.marvel.com/v1/public/comics"
@@ -48,8 +50,10 @@ class HttpCode : HttpCodeInterface{
 
             try {
 
+                setRequestProperty("If-None-Match", eTag)
                 requestMethod = "GET"
                 connectTimeout = 6000
+
 
                 when (responseCode) {
 
@@ -79,6 +83,7 @@ class HttpCode : HttpCodeInterface{
                 disconnect()
             }
         }
+
 
         return response
     }
