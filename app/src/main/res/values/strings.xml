@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Comics</string>
+    <string name="app_domain">com.narunas.comics</string>
 </resources>

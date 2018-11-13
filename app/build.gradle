@@ -4,6 +4,8 @@ apply plugin: 'kotlin-android'
 
 apply plugin: 'kotlin-android-extensions'
 
+apply plugin: 'kotlin-kapt'
+
 android {
     compileSdkVersion 28
     defaultConfig {
@@ -12,22 +14,76 @@ android {
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+        multiDexEnabled true
+        javaCompileOptions {
+            annotationProcessorOptions {
+                includeCompileClasspath false
+            }
+        }
+
     }
+
     buildTypes {
+
+        debug {
+
+            testCoverageEnabled = true
+        }
+
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+
+    testOptions {
+        unitTests.includeAndroidResources = true
+        unitTests.returnDefaultValues = true
+        unitTests.all {
+            testLogging {
+                events 'passed', 'skipped', 'failed', 'standardOut', 'standardError'
+            }
+        }
+    }
+
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 
 dependencies {
+
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$versions.kotlin"
     implementation 'com.android.support:appcompat-v7:28.0.0'
-    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    implementation deps.kotlin.stdlib
+    implementation deps.android.support.v7.cardView
+    implementation deps.android.support.v7.gridLayout
+    implementation deps.android.support.v7.recyclerView
+    implementation deps.android.support.v7.appcompat
+    implementation deps.android.support.annotations
+    implementation deps.android.support.design
+    implementation deps.android.arch.extensions
+    implementation deps.android.arch.runtime
+    implementation deps.android.arch.compiler
+    implementation deps.android.support.constraintLayout
+    implementation deps.glide.runtime
+    implementation deps.gson
+    kapt deps.glide.compiler
+    annotationProcessor 'com.google.dagger:dagger-compiler:' + rootProject.ext.versions.dagger
+    implementation 'com.google.dagger:dagger:' + rootProject.ext.versions.dagger
+    kapt 'com.google.dagger:dagger-compiler:' +  rootProject.ext.versions.dagger
+    kaptAndroidTest 'com.google.dagger:dagger-compiler:' +  rootProject.ext.versions.dagger
+    androidTestAnnotationProcessor 'com.google.dagger:dagger-compiler:' + rootProject.ext.versions.dagger
+    androidTestImplementation 'androidx.test.ext:junit:' + rootProject.ext.versions.test.jUnit
+    androidTestImplementation 'androidx.test:core:' + rootProject.ext.versions.test.core
+    androidTestImplementation 'androidx.test:runner:' + rootProject.ext.versions.test.runnerVersion
+    androidTestImplementation 'androidx.test:rules:' + rootProject.ext.versions.test.rulesVersion
+    androidTestImplementation 'androidx.test.espresso:espresso-core:' + rootProject.ext.versions.test.espresso_core
+    androidTestImplementation 'androidx.test.espresso:espresso-intents:' + rootProject.ext.versions.test.espresso_core
+
 }
+
