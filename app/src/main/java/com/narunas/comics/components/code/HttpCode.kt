@@ -12,50 +12,74 @@ import java.net.URLEncoder
 
 class HttpCode : HttpCodeInterface{
 
+    private val charSet = charset("UTF-8")
+    private val ENC  = "UTF-8"
+
+    /** hardcoded params here **/
+    private val format = "?format=comic"
+    private val formatType = "&formatType=comic"
+    private val limit = "&limit=20"
+
+
 
     override fun fetchJson() :StringBuffer? {
 
-        val baseUrl = "https://gateway.marvel.com:443/v1/public/comics"
-        val devKey = URLEncoder.encode("274049d15c01f3897fe1f51f96761092", "UTF-8")
-        val devPrKey = URLEncoder.encode("274049d15c01f3897fe1f51f96761092", "UTF-8")
-        val devTs = URLEncoder.encode(System.currentTimeMillis().toString(), "UTF-8")
+        var response: StringBuffer? = null
+        val baseUrl = "https://gateway.marvel.com/v1/public/comics"
+        val devPublicKey = URLEncoder.encode("274049d15c01f3897fe1f51f96761092", ENC)
+        val devPrivateKey = URLEncoder.encode("3e9a5f960fa0ae8263935c6eaaa47c2afbf61586", ENC)
+        val devTs = URLEncoder.encode(System.currentTimeMillis().toString(), ENC)
+        val devHash = Hashing.md5().hashString(devTs + devPrivateKey + devPublicKey, charSet)
 
-        val charSet = charset("UTF-8")
-        val devHash = Hashing.md5().hashString(devTs + devKey + devPrKey, charSet)
 
-
-        val mUrl = URL(baseUrl+ "?ts=" + devTs + "&apikey=" + devKey + "&hash=" + devHash)
-        val response: StringBuffer? = null
+        val mUrl = URL(
+            baseUrl
+                    + format
+                    + formatType
+                    + limit
+                    + "&ts="
+                    + devTs
+                    + "&apikey="
+                    + devPublicKey
+                    + "&hash="
+                    + devHash)
 
         with(mUrl.openConnection() as HttpURLConnection) {
 
-            connectTimeout = 6000
+            try {
 
-            when (responseCode) {
-                HTTP_OK -> {
+                requestMethod = "GET"
+                connectTimeout = 6000
 
+                when (responseCode) {
+
+                    HTTP_OK -> {
+
+                        BufferedReader(InputStreamReader(inputStream)).use {
+
+                            response = StringBuffer()
+                            var inputLine = it.readLine()
+                            while (inputLine != null) {
+                                response?.append(inputLine)
+                                inputLine = it.readLine()
+                            }
+
+                            it.close()
+
+                        }
+
+                    } else -> {
+
+                       /** handle error **/
+                    }
                 }
-                else -> {
 
-                    return null
-                }
+            } finally {
+
+                disconnect()
             }
-
-
-            BufferedReader(InputStreamReader(inputStream)).use {
-
-                var inputLine = it.readLine()
-                while (inputLine != null) {
-                    response?.append(inputLine)
-                    inputLine = it.readLine()
-                }
-
-                it.close()
-
-            }
-
-            disconnect()
-            return response
         }
+
+        return response
     }
 }

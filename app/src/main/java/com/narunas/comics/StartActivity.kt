@@ -18,7 +18,7 @@ class StartActivity : AppCompatActivity() {
         comicsApp = application as App
         model = ViewModelProviders.of(this).get(CommonViewModel::class.java)
         model.buildFunctionality()
-        model.fetchHttpData()
+//        model.fetchHttpData()
 
 
     }

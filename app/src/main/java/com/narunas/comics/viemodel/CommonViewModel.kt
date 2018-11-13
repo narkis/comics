@@ -38,9 +38,6 @@ class CommonViewModel : ViewModel(){
 
         val mUrl = URL(baseUrl+ "?ts=" + devTs + "&apikey=" + devKey + "&hash=" + devHash)
 
-        thread {
-            Log.d("TEST", httpHandler.fetchJson().toString())
-        }
     }
 
 

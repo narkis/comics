@@ -6,6 +6,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.narunas.comics.viemodel.CommonViewModel
 import com.narunas.simpledetailtest.base.BaseApplicationTest
 import junit.framework.TestCase.assertEquals
+import junit.framework.TestCase.assertNotNull
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -43,7 +44,10 @@ class CoreAppInstrumentedTests: BaseApplicationTest<StartActivity>(StartActivity
     @Test
     fun basicHttpRequest() {
 
-        commonModel.httpHandler.fetchJson()
+
+            val response = commonModel.httpHandler.fetchJson()
+            assertNotNull(" the http request returned null", response)
+
 
     }
 
