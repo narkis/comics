@@ -4,6 +4,7 @@ import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
 import android.arch.lifecycle.extensions.R.id.async
 import android.provider.Settings
+import android.util.Log
 import com.narunas.comics.components.ComicsHttpComponent
 import com.narunas.comics.components.DaggerComicsHttpComponent
 import com.narunas.comics.components.modules.ComicsGsonModule
@@ -13,6 +14,7 @@ import com.narunas.comics.gson.GsonCode
 import java.lang.Thread.sleep
 import java.util.*
 import javax.inject.Inject
+import kotlin.collections.HashMap
 import kotlin.concurrent.fixedRateTimer
 import kotlin.concurrent.thread
 import kotlin.concurrent.timer
@@ -38,6 +40,7 @@ class CommonViewModel : ViewModel() {
         }
 
         val TopComicsSections: MutableLiveData<HashMap<Int, TopSection>> = MutableLiveData()
+        val TAG: String = CommonViewModel::class.java.simpleName
     }
 
     init {
@@ -50,39 +53,36 @@ class CommonViewModel : ViewModel() {
 
     fun fetchHttpData() {
 
-
-
-
-
-
-
-
+            var cnt = 0
             val data = buildSections()
-            val iterator = data.iterator()
-            iterator.forEach {
+            val next = HashMap<Int, TopSection>(data.size)
 
+            val mTimer = Timer("", false)
+            mTimer.scheduleAtFixedRate(timerTask {
+                let {
+                    while(cnt <= data.size) {
 
-                val key = it.key
-                val response = httpHandler.fetchJson(it.value)
-                val comics = gsonParser.parseResponse(response)
+                        val sec = data.get(cnt)
+                        if(sec != null) {
+                            val new = sec
+                            val response = httpHandler.fetchJson(new)
+                            val set = gsonParser.parseResponse(response)
+                            new.comicsSet = set
+                            new.eTag = new.comicsSet?.etag!!
 
-                val section = it.value
-                section.timeStramp = System.currentTimeMillis()
-                if (comics != null) {
-                    section.comicsSet = comics
-                    section.eTag = comics.etag
+                            Log.d(TAG, "index: $cnt value: ${set?.data?.comics?.size}")
+                            Log.d(TAG, response.toString())
+                            next.put(cnt, new)
+
+                        }
+                        cnt ++
+                    }
                 }
 
-                data.put(key, section)
+                TopComicsSections.postValue(next)
+                cancel()
 
-
-            }
-
-            TopComicsSections.postValue(data)
-        }
-
-
-
+            }, 0L, 100L)
 
 
     }
@@ -101,10 +101,10 @@ class CommonViewModel : ViewModel() {
         sections.put(0, section1)
 
         val section2 = TopSection(System.currentTimeMillis())
-        section1.forDate = FOR_DATE.lastWeek.name
-        section1.sectionIndex = 0
-        section1.requestCount = 20
-        section1.title = "Last week"
+        section2.forDate = FOR_DATE.lastWeek.name
+        section2.sectionIndex = 1
+        section2.requestCount = 20
+        section2.title = "Last week"
 
         sections.put(1, section2)
 
