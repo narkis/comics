@@ -4,6 +4,7 @@ import android.arch.lifecycle.ViewModelProviders
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.narunas.comics.viemodel.CommonViewModel
+import com.narunas.comics.viemodel.TopSection
 import com.narunas.simpledetailtest.base.BaseApplicationTest
 import junit.framework.TestCase.*
 import org.junit.After
@@ -29,7 +30,6 @@ class CoreAppInstrumentedTests: BaseApplicationTest<StartActivity>(StartActivity
 
     }
 
-
     @After
     fun cleanUp() {
 
@@ -44,9 +44,14 @@ class CoreAppInstrumentedTests: BaseApplicationTest<StartActivity>(StartActivity
     @Test
     fun basicHttpRequest() {
 
+        val section1 = TopSection(System.currentTimeMillis())
+        section1.forDate = CommonViewModel.Companion.FOR_DATE.thisWeek.name
+        section1.sectionIndex = 0
+        section1.requestCount = 20
+        section1.title = "This week"
 
-            val response = commonModel.httpHandler.fetchJson(eTag)
-            assertNotNull(" the http request returned null", response)
+        val response = commonModel.httpHandler.fetchJson(section1)
+        assertNotNull(" the http request returned null", response)
 
     }
 
@@ -54,15 +59,19 @@ class CoreAppInstrumentedTests: BaseApplicationTest<StartActivity>(StartActivity
     @Test
     fun checkParsing() {
 
-        val response = commonModel.httpHandler.fetchJson(eTag)
+        val section1 = TopSection(System.currentTimeMillis())
+        section1.forDate = CommonViewModel.Companion.FOR_DATE.thisWeek.name
+        section1.sectionIndex = 0
+        section1.requestCount = 20
+        section1.title = "This week"
+
+        val response = commonModel.httpHandler.fetchJson(section1)
         if(response != null) {
 
             val comics = commonModel.gsonParser.parseResponse(response)
-            eTag = comics.etag
 
-            assertNotNull(" Comics parsing ERROR ", comics)
-            assertNotSame("", eTag)
-            assertEquals(" Incorrect number of Comics returned", 20, comics.data.comics.size)
+            assertNotNull(" ComicsThisWeek parsing ERROR ", comics)
+            assertEquals(" Incorrect number of ComicsThisWeek returned", 20, comics?.data?.comics?.size)
 
         }
 
@@ -71,24 +80,78 @@ class CoreAppInstrumentedTests: BaseApplicationTest<StartActivity>(StartActivity
     @Test
     fun checkEtagResponse() {
 
-        var _eT = ""
+        val section1 = TopSection(System.currentTimeMillis())
+        section1.forDate = CommonViewModel.Companion.FOR_DATE.thisWeek.name
+        section1.sectionIndex = 0
+        section1.requestCount = 20
+        section1.title = "This week"
 
-        /** eTag is set now to a correct value **/
-        val response = commonModel.httpHandler.fetchJson(_eT)
+        val response = commonModel.httpHandler.fetchJson(section1)
         if(response != null) {
             val comics = commonModel.gsonParser.parseResponse(response)
-            assertNotNull(" Comics parsing ERROR ", comics)
-            _eT = comics.etag
+            assertNotNull(" ComicsThisWeek parsing ERROR ", comics)
+            section1.eTag = comics?.etag!!
 
         }
 
 
-        val second = commonModel.httpHandler.fetchJson(_eT)
+        val second = commonModel.httpHandler.fetchJson(section1)
         if(second != null) {
 
             val comics = commonModel.gsonParser.parseResponse(response)
-            assertEquals(" etags should be equal ${comics.etag} ", _eT, comics.etag)
+            assertEquals(" etags should be equal ${comics?.etag} ", section1.eTag, comics?.etag)
         }
+
+    }
+
+    @Test
+    fun checkThumbAvailability () {
+
+        val section1 = TopSection(System.currentTimeMillis())
+        section1.forDate = CommonViewModel.Companion.FOR_DATE.thisWeek.name
+        section1.sectionIndex = 0
+        section1.requestCount = 20
+        section1.title = "This week"
+
+        val response = commonModel.httpHandler.fetchJson(section1)
+        if(response != null) {
+
+            val comics = commonModel.gsonParser.parseResponse(response)
+
+            assertNotNull(" ComicsThisWeek ERROR ", comics)
+            assertNotNull( " no image available ", comics?.data?.comics?.get(0)?.thumb?.path)
+        }
+
+
+    }
+
+    @Test
+    fun checkLastWeek () {
+
+        val section1 = TopSection(System.currentTimeMillis())
+        section1.forDate = CommonViewModel.Companion.FOR_DATE.lastWeek.name
+        section1.sectionIndex = 0
+        section1.requestCount = 20
+        section1.title = "Last Week"
+
+        val response = commonModel.httpHandler.fetchJson(section1)
+        assertNotNull(" the http request returned null", response)
+
+
+    }
+
+    @Test
+    fun checkNextWeek () {
+
+        val section1 = TopSection(System.currentTimeMillis())
+        section1.forDate = CommonViewModel.Companion.FOR_DATE.nextWeek.name
+        section1.sectionIndex = 0
+        section1.requestCount = 20
+        section1.title = "Next Week"
+
+        val response = commonModel.httpHandler.fetchJson(section1)
+        assertNotNull(" the http request returned null", response)
+
 
     }
 }

@@ -4,10 +4,10 @@ import com.google.gson.Gson
 
 class GsonCode : GsonInterface {
 
-    override fun parseResponse(data: StringBuffer?): ComicsSet{
+    override fun parseResponse(data: StringBuffer?): ComicsSet? {
 
         val gson = Gson()
-        val comics: ComicsSet = gson.fromJson(data.toString(), ComicsSet::class.java)
+        val comics: ComicsSet? = gson.fromJson(data.toString(), ComicsSet::class.java)
         return comics
 
     }

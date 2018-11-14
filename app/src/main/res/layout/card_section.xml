@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.card.MaterialCardView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:elevation="4dp"
+        android:layout_gravity="center_horizontal"
+        app:cardCornerRadius="0dp"
+        app:contentPadding="4dp"
+        android:background="@color/colorAccent"
+        >
+    <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        <LinearLayout
+                android:id="@+id/header"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:orientation="vertical"
+                android:gravity="start|center_vertical"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/image_grid">
+            <TextView
+                    android:id="@+id/section_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/content_margin"
+                    android:layout_marginEnd="@dimen/content_margin"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:textSize="14sp"
+                    android:textColor="@color/colorPrimaryDark"
+                    />
+        </LinearLayout>
+        <android.support.v7.widget.RecyclerView
+                android:id="@+id/image_grid"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="none"
+                android:isScrollContainer="false"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/header"/>
+    </android.support.constraint.ConstraintLayout>
+</android.support.design.card.MaterialCardView>
