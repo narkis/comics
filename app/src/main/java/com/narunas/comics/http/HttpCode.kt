@@ -1,8 +1,8 @@
 package com.narunas.comics.http
 
 
-import android.util.Log
 import com.google.common.hash.Hashing
+import com.narunas.comics.viemodel.Constants
 import com.narunas.comics.viemodel.TopSection
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -29,9 +29,9 @@ class HttpCode : HttpCodeInterface {
     override fun fetchJson(section: TopSection) :StringBuffer? {
 
         var response: StringBuffer? = null
-        val baseUrl = "https://gateway.marvel.com/v1/public/comics"
-        val devPublicKey = URLEncoder.encode("274049d15c01f3897fe1f51f96761092", ENC)
-        val devPrivateKey = URLEncoder.encode("3e9a5f960fa0ae8263935c6eaaa47c2afbf61586", ENC)
+        val baseUrl = Constants.BASE
+        val devPublicKey = URLEncoder.encode(Constants.PU, ENC)
+        val devPrivateKey = URLEncoder.encode(Constants.PR, ENC)
         val devTs = URLEncoder.encode(System.currentTimeMillis().toString(), ENC)
         val devHash = Hashing.md5().hashString(devTs + devPrivateKey + devPublicKey, charSet)
 
@@ -91,4 +91,6 @@ class HttpCode : HttpCodeInterface {
 
         return response
     }
+
 }
+

@@ -1,4 +1,6 @@
 <resources>
     <string name="app_name">Comics</string>
     <string name="app_domain">com.narunas.comics</string>
+    <string name="pu">274049d15c01f3897fe1f51f96761092</string>
+    <string name="pr">3e9a5f960fa0ae8263935c6eaaa47c2afbf61586</string>
 </resources>

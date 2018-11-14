@@ -4,24 +4,22 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:elevation="4dp"
+        android:elevation="6dp"
         android:layout_gravity="center_horizontal"
         app:cardCornerRadius="0dp"
-        app:contentPadding="4dp"
-        android:background="@color/colorAccent"
+        app:contentPadding="2dp"
         >
-    <android.support.constraint.ConstraintLayout
+    <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:background="@color/grey">
         <LinearLayout
                 android:id="@+id/header"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:orientation="vertical"
-                android:gravity="start|center_vertical"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintBottom_toTopOf="@+id/image_grid">
+                android:gravity="start|top">
             <TextView
                     android:id="@+id/section_title"
                     android:layout_width="wrap_content"
@@ -30,8 +28,8 @@
                     android:layout_marginEnd="@dimen/content_margin"
                     android:layout_marginTop="10dp"
                     android:layout_marginBottom="10dp"
-                    android:textSize="14sp"
-                    android:textColor="@color/colorPrimaryDark"
+                    android:textSize="20sp"
+                    android:textColor="@color/off_white"
                     />
         </LinearLayout>
         <android.support.v7.widget.RecyclerView
@@ -39,8 +37,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:scrollbars="none"
-                android:isScrollContainer="false"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/header"/>
-    </android.support.constraint.ConstraintLayout>
+                android:isScrollContainer="false"/>
+    </LinearLayout>
 </android.support.design.card.MaterialCardView>

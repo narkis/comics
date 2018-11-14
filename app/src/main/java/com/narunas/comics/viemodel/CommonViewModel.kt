@@ -2,7 +2,6 @@ package com.narunas.comics.viemodel
 
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
-import android.util.Log
 import com.narunas.comics.components.ComicsHttpComponent
 import com.narunas.comics.components.DaggerComicsHttpComponent
 import com.narunas.comics.components.modules.ComicsGsonModule
@@ -15,6 +14,8 @@ import javax.inject.Inject
 import kotlin.collections.HashMap
 import kotlin.concurrent.timerTask
 
+
+
 class CommonViewModel : ViewModel() {
 
 
@@ -24,6 +25,7 @@ class CommonViewModel : ViewModel() {
 
     @Inject
     lateinit var gsonParser: GsonCode
+
 
     companion object {
 
@@ -38,11 +40,13 @@ class CommonViewModel : ViewModel() {
         val ComicsSetInReview: MutableLiveData<ArrayList<Comic>> = MutableLiveData()
         val TopComicsSections: MutableLiveData<HashMap<Int, TopSection>> = MutableLiveData()
         val TAG: String = CommonViewModel::class.java.simpleName
+
     }
 
     init {
 
         createHttpComponent().inject(this)
+
 
     }
 
@@ -76,6 +80,7 @@ class CommonViewModel : ViewModel() {
 
                 TopComicsSections.postValue(next)
                 cancel()
+
 
             }, 0L, 10L)
 
@@ -123,3 +128,4 @@ class CommonViewModel : ViewModel() {
 
 
 }
+
