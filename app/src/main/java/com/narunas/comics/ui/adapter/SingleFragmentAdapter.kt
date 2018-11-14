@@ -7,9 +7,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import com.narunas.comics.Details
+import com.narunas.comics.Details.Companion.ACT_IMG
 import com.narunas.comics.R
 import com.narunas.comics.gson.Comic
 import com.narunas.comics.ui.common.BaseImageView
+import com.narunas.comics.viemodel.CommonViewModel.Companion.ComicsSetInReview
 import com.narunas.comics.viemodel.TopSection
 
 class SingleFragmentAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -94,8 +97,6 @@ class SingleFragmentAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             if(holder is ImageViewHolder) {
                 val comic = dataSet[position]
 
-
-
                 val url = StringBuffer()
                 url.append(comic.thumb.path)
                 url.append(".")
@@ -106,28 +107,10 @@ class SingleFragmentAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
                 holder.image.setOnClickListener {
 
-                    /** switch for single / pager detail view **/
-//                    when(APP_UI) {
-//                        UI_VERSION.single -> {
-//
-//                            ImageInReview.postValue(dataSet[position])
-//                            val intent = Intent(holder.itemView.context, DetailsActivity::class.java)
-//                            holder.itemView.context.startActivity(intent)
-//
-//                        }
-//                        UI_VERSION.pager -> {
-//
-//                            AlbumInReview.postValue(dataSet)
-//                            val intent = Intent(holder.itemView.context, PagerActivity::class.java)
-//                            intent.putExtra(ACT_IMG, position)
-//                            holder.itemView.context.startActivity(intent)
-//
-//                        } else -> {
-//
-//                            ErrorData.postValue(" Error viewing content ")
-//                        }
-//
-//                    }
+                        ComicsSetInReview.postValue(dataSet)
+                        val intent = Intent(holder.itemView.context, Details::class.java)
+                        intent.putExtra(ACT_IMG, position)
+                        holder.itemView.context.startActivity(intent)
                 }
             }
         }

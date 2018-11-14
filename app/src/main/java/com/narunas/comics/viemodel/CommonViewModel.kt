@@ -2,22 +2,17 @@ package com.narunas.comics.viemodel
 
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
-import android.arch.lifecycle.extensions.R.id.async
-import android.provider.Settings
 import android.util.Log
 import com.narunas.comics.components.ComicsHttpComponent
 import com.narunas.comics.components.DaggerComicsHttpComponent
 import com.narunas.comics.components.modules.ComicsGsonModule
 import com.narunas.comics.http.HttpCode
 import com.narunas.comics.components.modules.ComicsHttpModule
+import com.narunas.comics.gson.Comic
 import com.narunas.comics.gson.GsonCode
-import java.lang.Thread.sleep
 import java.util.*
 import javax.inject.Inject
 import kotlin.collections.HashMap
-import kotlin.concurrent.fixedRateTimer
-import kotlin.concurrent.thread
-import kotlin.concurrent.timer
 import kotlin.concurrent.timerTask
 
 class CommonViewModel : ViewModel() {
@@ -35,16 +30,17 @@ class CommonViewModel : ViewModel() {
         enum class FOR_DATE {
             thisWeek,
             nextWeek,
-            lastWeek
+            lastWeek,
+            thisMonth
 
         }
 
+        val ComicsSetInReview: MutableLiveData<ArrayList<Comic>> = MutableLiveData()
         val TopComicsSections: MutableLiveData<HashMap<Int, TopSection>> = MutableLiveData()
         val TAG: String = CommonViewModel::class.java.simpleName
     }
 
     init {
-
 
         createHttpComponent().inject(this)
 
@@ -53,6 +49,9 @@ class CommonViewModel : ViewModel() {
 
     fun fetchHttpData() {
 
+        /** dagger injection should provide versions of this functionality
+         * a slight delay in between the loads here
+         */
             var cnt = 0
             val data = buildSections()
             val next = HashMap<Int, TopSection>(data.size)
@@ -69,11 +68,7 @@ class CommonViewModel : ViewModel() {
                             val set = gsonParser.parseResponse(response)
                             new.comicsSet = set
                             new.eTag = new.comicsSet?.etag!!
-
-                            Log.d(TAG, "index: $cnt value: ${set?.data?.comics?.size}")
-                            Log.d(TAG, response.toString())
                             next.put(cnt, new)
-
                         }
                         cnt ++
                     }
@@ -82,8 +77,7 @@ class CommonViewModel : ViewModel() {
                 TopComicsSections.postValue(next)
                 cancel()
 
-            }, 0L, 100L)
-
+            }, 0L, 10L)
 
     }
 
@@ -107,6 +101,14 @@ class CommonViewModel : ViewModel() {
         section2.title = "Last week"
 
         sections.put(1, section2)
+
+        val section3 = TopSection(System.currentTimeMillis())
+        section3.forDate = FOR_DATE.thisMonth.name
+        section3.sectionIndex = 2
+        section3.requestCount = 20
+        section3.title = "This Month"
+
+        sections.put(2, section3)
 
         return sections
     }
